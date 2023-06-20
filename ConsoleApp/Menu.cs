@@ -6,5 +6,11 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp
 {
-    
+    public enum Menu
+    {
+        SignUp = 1,
+        Login,
+        Exit
+    }
+
 }

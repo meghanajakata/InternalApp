@@ -14,7 +14,7 @@ namespace DataLayer
         /// <returns></returns>
         public string SignUp(User userObj)
         {           
-            if (GetSignedUser(userObj) == false)
+            if (UserExists(userObj) == false)
             {
                 AddUser(userObj);
                 return Literals.signUpSuccess;
@@ -27,10 +27,13 @@ namespace DataLayer
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public string Login(User userObj)
+        public string Login(User user)
         {
-            DataSources dataObject = new DataSources();
-            User user = GetLoggedUser(userObj);
+            User userObj = GetUser(user);
+            if (DataSources.userDetails.Count == 0)
+            {
+                return Literals.noUsersRegistered;
+            }
             if (userObj == null)
             {
                 return Literals.invalidLogin;
@@ -39,21 +42,37 @@ namespace DataLayer
         }
 
         /// <summary>
-        /// Checks  user if the user is already in Database
+        /// Represents the forgot password functionality
         /// </summary>
         /// <param name="userObj"></param>
         /// <returns></returns>
-        public bool GetSignedUser(User userObj)
+        public string ForgotPassword(User userObj)
         {
-
-            for (int i = 0; i < DataSources.userDetails.Count; i++)
+            if (UserExists(userObj))
             {
-                if (DataSources.userDetails[i].Username == userObj.Username)
-                {
-                    return true;
-                }
+                UpdateUser(userObj);
+                return Literals.passwordUpdateSuccess;
             }
-            return false;
+            return Literals.userDoesntExist;
+        }
+
+        /// <summary>
+        /// Checks  user if the user is already in Database
+        /// </summary>
+        /// <param name="userObj"></param>
+        /// <returns>
+        /// Returns true if user already exists and false if not
+        /// </returns>
+        public bool UserExists(User userObj)
+        {
+            User user = DataSources.userDetails.Find(user => user.Username == userObj.Username);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -61,18 +80,15 @@ namespace DataLayer
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public User GetLoggedUser(User userObj)
+        public User GetUser(User userObj)
         {
-            if (DataSources.userDetails.Count == 0)
+            User user = DataSources.userDetails.Find(user => user.Username == userObj.Username);
+            
+            if(user != null)
             {
-                return null;
-            }
-
-            for (int i = 0; i < DataSources.userDetails.Count; i++)
-            {
-                if (DataSources.userDetails[i].Username == userObj.Username && DataSources.userDetails[i].Password == userObj.Password)
+                if(user.Password == userObj.Password)
                 {
-                    return DataSources.userDetails[i];
+                    return user;
                 }
             }
             return null;
@@ -85,6 +101,20 @@ namespace DataLayer
         public void AddUser(User userObj)
         {
             DataSources.userDetails.Add(userObj);
+        }
+
+        /// <summary>
+        /// Updates the user password
+        /// </summary>
+        /// <param name="userObj"></param>
+        public void UpdateUser(User userObj)
+        {
+            User user = DataSources.userDetails.Find(user => user.Username == userObj.Username);
+
+            if (user != null)
+            {
+                user.Password = userObj.Password;   
+            }
         }
 
     }

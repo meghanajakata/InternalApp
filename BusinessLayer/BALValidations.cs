@@ -5,7 +5,7 @@ namespace BusinessLayer
     /// <summary>
     /// Represents the validations of business layer
     /// </summary>
-    public class BALValidations
+    internal class BALValidations 
     {
         /// <summary>
         /// Checks whether the username is valid
@@ -14,15 +14,11 @@ namespace BusinessLayer
         /// <returns></returns>
         public bool IsValidUsername(string username)
         {
-            if(StartsWith(username) == false)
+            if(Regex.IsMatch(username, @"(^[a-zA-Z_]{3,12}$)"))
             {
-                return false;
+                return true;
             }
-            if(Contains(username) == false)
-            {
-                return false;
-            }
-            return true;    
+            return false;
         }
 
         /// <summary>
@@ -32,11 +28,12 @@ namespace BusinessLayer
         /// <returns></returns>
         public bool IsValidPassword(string password)
         {
-            if (password == null || password.Length < 8 || Regex.IsMatch(password, "[A-Za-z0-9]") == false )
+            if (Regex.IsMatch(password, @"(^[A-Z])[a-zA-Z0-9_!@]{8,20}$"))
             {
-                return false;
+                return true;
             }
-            return true;
+            return false;
+
         }
 
         /// <summary>
@@ -46,7 +43,7 @@ namespace BusinessLayer
         /// <returns></returns>
         public bool IsValidEmail(string email)
         {
-            if (email == null || Regex.IsMatch(email,"@gmail.com$") == false)
+            if (email == null || Regex.IsMatch(email,"^[a-z]{1,}?@gmail.com$") == false)
             {
                 return false;
             }
@@ -60,40 +57,11 @@ namespace BusinessLayer
         /// <returns></returns>
         public bool IsValidMobilenumber(string mobileNumber)
         {
-            if(!Regex.IsMatch(mobileNumber,"^[6 - 9]\\d{ 9}$"))
-            {
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Checks whether the string startswith certain value
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public bool StartsWith(string name)
-        {
-            if (name[0] == '_' || (name[0] >= 'a' && name[0] <= 'z') || (name[0] >= 'A' && name[0] <= 'Z'))
+            if(Regex.IsMatch(mobileNumber,"^[0-9]{10}$"))
             {
                 return true;
             }
             return false;
-        }
-
-        /// <summary>
-        /// Checks whether the name contains required values
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public  bool Contains(string name)
-        {
-            if (name.Length == 1) return true;
-            for (int i = 1; i < name.Length; i++)
-            {
-                if (!char.IsLetterOrDigit(name[i])) return false;
-            }
-            return true;
         }
     }
 }

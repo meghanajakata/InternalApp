@@ -9,8 +9,9 @@ namespace DataLayer
     {
         public string SignUp(User userObj);
         public string Login(User userObj);
-        public bool GetSignedUser(User userObj);
-        public User GetLoggedUser(User userObj);
+        public string ForgotPassword(User userObj);
+        public bool UserExists(User userObj);
+        public User GetUser(User userObj);
 
     }
 }

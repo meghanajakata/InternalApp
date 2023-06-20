@@ -14,64 +14,74 @@ namespace ConsoleApp
         public void SignUp()
         {
             User userObj = new User();
-            BALValidations balValObj = new BALValidations();
             BALFactory balFacObj = new BALFactory();
 
             IBAL balObj = balFacObj.GetBALObject();
 
-            Log logObj = new Log();
-
-            logObj.Write(Literals.username);
-            userObj.Username = Console.ReadLine();
-
             // Checks until the user is valid
-            while (!balValObj.IsValidUsername(userObj.Username))
+            while (true)
             {
-                logObj.Write(Literals.invalidUsername);
+                Log .Write(Literals.username);
                 userObj.Username = Console.ReadLine();
+                if (balObj.ValidUsername(userObj.Username))
+                {
+                    break;
+                }
             }
-
-            logObj.Write(Literals.email);
-            userObj.EmailId = Console.ReadLine();
 
             // Checks until EmailId is valid
-            while (balValObj.IsValidEmail(userObj.EmailId) == false)
+            while (true)
             {
-                logObj.Write(Literals.invalidEmail);
+                Log.Write(Literals.email);
                 userObj.EmailId = Console.ReadLine();
-            }
 
-            logObj.Write(Literals.phoneNumber);
-            userObj.MobileNumber = Console.ReadLine();
+                if (balObj.ValidEmailId(userObj.EmailId))
+                {
+                    break;
+                }
+            }
 
             // Checks until Mobile Number is valid
-            while (balValObj.IsValidMobilenumber(userObj.MobileNumber) == false)
+            while(true)
             {
-                logObj.Write(Literals.invalidMobileNumber);
+                Log.Write(Literals.phoneNumber);
                 userObj.MobileNumber = Console.ReadLine();
-            }
 
-            logObj.Write(Literals.password);
-            userObj.Password = Console.ReadLine();
+                if(balObj.ValidPhoneNumber(userObj.MobileNumber))
+                {
+                    break;
+                }
+            }
 
             // Checks until the password is valid
-            while (balValObj.IsValidPassword(userObj.Password) == false)
+            while(true)
             {
-                logObj.Write(Literals.invalidPassword);
+                Log.Write(Literals.password);
                 userObj.Password = Console.ReadLine();
+
+                if(balObj.ValidPassword(userObj.Password))
+                {
+                    break;
+                }
+                Log.Write(Literals.invalidPassword);
             }
 
-            logObj.Write(Literals.confirmPassword);
-            string confirmPassword = Console.ReadLine();
+
+            string confirmPassword;
 
             // Checks until the confirm Password is same as password
-            while (userObj.Password != confirmPassword)
+            while(true)
             {
-                logObj.Write(Literals.confirmPassword);
+                Log.Write(Literals.confirmPassword);
                 confirmPassword = Console.ReadLine();
+
+                if(userObj.Password == confirmPassword)
+                {
+                    break;
+                }
             }
 
-            logObj.Write(balObj.SignUp(userObj));
+            Log.Write(balObj.SignUp(userObj));
         }
 
         /// <summary>
@@ -79,19 +89,67 @@ namespace ConsoleApp
         /// </summary>
         public void Login()
         {
-            Log logObj = new Log();
-            BALFactory balFactoryObject = new BALFactory();
-            IBAL balObj = balFactoryObject.GetBALObject();
-
+            BALFactory balFactoryObj = new BALFactory();
+            IBAL balObj = balFactoryObj.GetBALObject();
             User userObj = new User();
 
-            logObj.Write(Literals.username);
+            Log .Write(Literals.username);
             userObj.Username = Console.ReadLine();
 
-            logObj.Write(Literals.password);
+            Log.Write(Literals.password);
             userObj.Password = Console.ReadLine();
 
-            logObj.Write(balObj.Login(userObj));
+            string message = balObj.Login(userObj);
+            Log.Write(message);
+
+            if(message == Literals.invalidLogin)
+            {
+                Log.Write(Literals.forgotPassword);
+                string option = Console.ReadLine();  
+                if(option == "1")
+                {
+                    ForgotPassword();
+                }
+            }
+
+        }
+
+        public void ForgotPassword()
+        {
+            BALFactory balFactoryObj = new BALFactory();
+            IBAL balObj = balFactoryObj.GetBALObject();
+            User userObj = new User();
+            string confirmNewPassword;
+
+            userObj.Username = Console.ReadLine();
+            Log.Write(Literals.username);
+
+            // Checks until the password meets the criteria
+            while (true)
+            {
+                Log.Write(Literals.password);
+                userObj.Password = Console.ReadLine();
+
+                if (balObj.ValidPassword(userObj.Password))
+                {
+                    break;
+                }
+                Log.Write(Literals.invalidPassword);
+            }
+
+            // Checks until the confirm Password is same as password
+            while (true)
+            {
+                Log.Write(Literals.confirmPassword);
+                confirmNewPassword = Console.ReadLine();
+
+                if (userObj.Password == confirmNewPassword)
+                {
+                    break;
+                }
+            }
+
+            Log.Write(balObj.ForgotPassword(userObj));
 
         }
 

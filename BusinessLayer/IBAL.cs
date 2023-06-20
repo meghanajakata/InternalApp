@@ -9,13 +9,10 @@ namespace BusinessLayer
     {
         public string SignUp(User user);
         public string Login(User user);
-    }
-
-    public interface IBALValidations
-    {
-        public bool IsValidUsername(string username);
-        public bool IsValidPassword(string password);
-        public bool IsValidEmail(string email);
-        public bool IsValidMobilenumber(string mobileNumber);
+        public string ForgotPassword(User userObj);
+        public bool ValidUsername(string username);
+        public bool ValidEmailId(string emailId);
+        public bool ValidPhoneNumber(string phoneNumber);
+        public bool ValidPassword(string password);
     }
 }
