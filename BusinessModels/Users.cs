@@ -10,5 +10,16 @@
         public string MobileNumber { get; set; }
         public string Password { get; set; }
 
+        //public static explicit operator DModels.User(BusinessModels.User user)
+        //{
+        //    DModels.User dUserObj = new DModels.User();
+        //    dUserObj.Username = user.Username;
+        //    dUserObj.EmailId = user.EmailId;
+        //    dUserObj.MobileNumber = user.MobileNumber;
+        //    dUserObj.Password = user.Password;
+
+        //    return dUserObj;
+        //}
+
     }
 }

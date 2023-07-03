@@ -1,4 +1,5 @@
-﻿using BusinessModels;
+﻿using BModels = BusinessModels;
+using DModels = DataModels;
 
 namespace DataLayer
 {
@@ -7,11 +8,11 @@ namespace DataLayer
     /// </summary>
     public interface IData
     {
-        public string SignUp(User userObj);
-        public string Login(User userObj);
-        public string ForgotPassword(User userObj);
-        public bool UserExists(User userObj);
-        public User GetUser(User userObj);
+        public string SignUp(BModels.User userObj);
+        public string Login(BModels.User userObj);
+        public string ForgotPassword(BModels.User userObj);
+        public bool UserExists(BModels.User userObj);
+        public DModels.User GetUser(BModels.User userObj);
 
     }
 }

@@ -1,4 +1,6 @@
 ﻿using BusinessModels;
+using BModels = BusinessModels;
+using DModels = DataModels;
 
 namespace DataLayer
 {
@@ -12,14 +14,15 @@ namespace DataLayer
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public string SignUp(User userObj)
+        public string SignUp(BModels.User userObj)
         {           
             if (UserExists(userObj) == false)
             {
-                AddUser(userObj);
-                return Literals.signUpSuccess;
+                DModels.User dModeluser = ConvertToDataModel(userObj);  
+                AddUser(dModeluser);
+                return BModels.Literals.signUpSuccess;
             }
-            return Literals.userExists;
+            return BModels.Literals.userExists;
         }
 
         /// <summary>
@@ -27,18 +30,18 @@ namespace DataLayer
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public string Login(User user)
+        public string Login(BModels.User user)
         {
-            User userObj = GetUser(user);
+            DModels.User userObj = GetUser(user);
             if (DataSources.userDetails.Count == 0)
             {
-                return Literals.noUsersRegistered;
+                return BModels.Literals.noUsersRegistered;
             }
             if (userObj == null)
             {
-                return Literals.invalidLogin;
+                return BModels.Literals.invalidLogin;
             }
-            return Literals.loginSuccess;
+            return BModels.Literals.loginSuccess;
         }
 
         /// <summary>
@@ -46,14 +49,14 @@ namespace DataLayer
         /// </summary>
         /// <param name="userObj"></param>
         /// <returns></returns>
-        public string ForgotPassword(User userObj)
+        public string ForgotPassword(BModels.User userObj)
         {
             if (UserExists(userObj))
             {
                 UpdateUser(userObj);
-                return Literals.passwordUpdateSuccess;
+                return BModels.Literals.passwordUpdateSuccess;
             }
-            return Literals.userDoesntExist;
+            return BModels.Literals.userDoesntExist;
         }
 
         /// <summary>
@@ -63,9 +66,9 @@ namespace DataLayer
         /// <returns>
         /// Returns true if user already exists and false if not
         /// </returns>
-        public bool UserExists(User userObj)
+        public bool UserExists(BModels.User userObj)
         {
-            User user = DataSources.userDetails.Find(user => user.Username == userObj.Username);
+            DModels.User user = DataSources.userDetails.Find(user => user.Username == userObj.Username);
 
             if (user == null)
             {
@@ -80,9 +83,9 @@ namespace DataLayer
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public User GetUser(User userObj)
+        public DModels.User GetUser(BModels.User userObj)
         {
-            User user = DataSources.userDetails.Find(user => user.Username == userObj.Username);
+            DModels.User user = DataSources.userDetails.Find(user => user.Username == userObj.Username);
             
             if(user != null)
             {
@@ -98,7 +101,7 @@ namespace DataLayer
         /// Adds the user to the database
         /// </summary>
         /// <param name="user"></param>
-        public void AddUser(User userObj)
+        public void AddUser(DModels.User userObj)
         {
             DataSources.userDetails.Add(userObj);
         }
@@ -107,14 +110,25 @@ namespace DataLayer
         /// Updates the user password
         /// </summary>
         /// <param name="userObj"></param>
-        public void UpdateUser(User userObj)
+        public void UpdateUser(BModels.User userObj)
         {
-            User user = DataSources.userDetails.Find(user => user.Username == userObj.Username);
+            DModels.User user = DataSources.userDetails.Find(user => user.Username == userObj.Username);
 
             if (user != null)
             {
                 user.Password = userObj.Password;   
             }
+        }
+
+        public DModels.User ConvertToDataModel(BModels.User user)
+        {
+            DModels.User dUserObj = new DModels.User();
+            dUserObj.Username = user.Username;
+            dUserObj.EmailId = user.EmailId;
+            dUserObj.MobileNumber = user.MobileNumber;
+            dUserObj.Password = user.Password;
+
+            return dUserObj;
         }
 
     }
