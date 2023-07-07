@@ -1,4 +1,9 @@
-﻿using BusinessModels;
+﻿using AutoMapper;
+using BusinessModels;
+using DataModels;
+using System;
+using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using BModels = BusinessModels;
 using DModels = DataModels;
 
@@ -8,17 +13,20 @@ namespace DataLayer
     /// Represents the Data Layer Authentication
     /// </summary>
     internal class DALAuthentications : IData
-    {   
+    {
         /// <summary>
         /// Checks whether the user is already Registered
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
         public string SignUp(BModels.User userObj)
-        {           
+        {
             if (UserExists(userObj) == false)
-            {
-                DModels.User dModeluser = ConvertToDataModel(userObj);  
+            { 
+                var mapper = MapperConfig.InitializeAutomapper();
+                //DModels.User dModeluser = (DModels.User)MapperConfig.MapModel(mapper,userObj);
+                DModels.User dModeluser = new DModels.User();
+                PropertyCopier.ConvertModel2(mapper, dModeluser);
                 AddUser(dModeluser);
                 return BModels.Literals.signUpSuccess;
             }
@@ -86,10 +94,10 @@ namespace DataLayer
         public DModels.User GetUser(BModels.User userObj)
         {
             DModels.User user = DataSources.userDetails.Find(user => user.Username == userObj.Username);
-            
-            if(user != null)
+
+            if (user != null)
             {
-                if(user.Password == userObj.Password)
+                if (user.Password == userObj.Password)
                 {
                     return user;
                 }
@@ -116,22 +124,115 @@ namespace DataLayer
 
             if (user != null)
             {
-                user.Password = userObj.Password;   
+                user.Password = userObj.Password;
             }
         }
 
-        public DModels.User ConvertToDataModel(BModels.User user)
-        {
-            DModels.User dUserObj = new DModels.User();
-            dUserObj.Username = user.Username;
-            dUserObj.EmailId = user.EmailId;
-            dUserObj.MobileNumber = user.MobileNumber;
-            dUserObj.Password = user.Password;
+        //public dynamic? ConvertModel(dynamic getModel)
+        //{
+        //    dynamic setModel;
+        //    if (getModel.GetType().Name == typeof(DModels.User))
+        //    {
+        //        setModel = new BModels.User();
 
-            return dUserObj;
+        //    }
+
+        //    else
+        //    {
+        //        setModel = new DModels.User();
+
+        //    }
+
+        //    setModel.Username = getModel.Username;
+        //    setModel.EmailId = getModel.EmailId;
+        //    setModel.MobileNumber = getModel.MobileNumber;
+        //    setModel.Password = getModel.Password;
+
+        //    return setModel;
+
+        //}
+
+        
+        public dynamic CovertModel(IUser getModel)
+        {
+            dynamic setModel;
+
+            if(getModel is BModels.User)
+            {
+                setModel = (DModels.User)getModel;
+            }
+
+            else
+            {
+                setModel = (BModels.User)getModel;
+
+            }
+            
+            return setModel;
         }
+
+        //public dynamic ConvertModel1<T>(T setModel)
+        //{
+
+        //}
+
+
 
     }
 
-   
+    public class MapperConfig
+    {
+        public static Mapper InitializeAutomapper()
+        {
+            //Provide all the Mapping Configuration
+            var config = new MapperConfiguration(cfg =>
+            {
+                //Configuring Employee and EmployeeDTO
+                cfg.CreateMap<BModels.User,DModels.User>();
+                //Any Other Mapping Configuration ....
+            });
+            //Create an Instance of Mapper and return that Instance
+            var mapper = new Mapper(config);
+            return mapper;
+        }
+
+        public static Object MapModel(dynamic mapper,Object getObj)
+        {
+            Object setObj;
+            if (getObj.GetType() == typeof(BModels.User))
+            {
+                setObj = mapper.Map<DModels.User>(getObj);
+
+            }
+            else
+            {
+                setObj = mapper.Mapper<BModels.User>(getObj);
+            }
+            return setObj;
+        }
+    }
+
+    public class PropertyCopier<Tobj1, Tobj2> where Tobj1 : class where Tobj2 : class
+    {
+        public static void ConvertModel2(Tobj1 getModel, Tobj2 setModel)
+        {
+            var getModelProperties = getModel.GetType().GetProperties();
+            var setModelProperties = setModel.GetType().GetProperties();
+
+            foreach (var getModelProperty in getModelProperties)
+            {
+                foreach (var setModelProperty in setModelProperties)
+                {
+                    if (getModelProperty.Name == setModelProperty.Name && getModelProperty == setModelProperty.PropertyType)
+                    {
+                        setModelProperty.SetValue(setModel, getModelProperty.GetValue(getModel));
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+
+
 }

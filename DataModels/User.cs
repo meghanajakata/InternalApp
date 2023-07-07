@@ -1,6 +1,8 @@
-﻿namespace DataModels
+﻿using BusinessModels;
+
+namespace DataModels 
 {
-    public class User
+    public class User : IUser
     {
         public string Username { get; set; }
         public string EmailId { get; set; }
