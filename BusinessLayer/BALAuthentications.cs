@@ -17,6 +17,7 @@ namespace BusinessLayer
         {
             DataFactory dataFactoryObj = new DataFactory();
             IData dataAuthObj = dataFactoryObj.GetAuthenticationsObject();
+            Console.WriteLine("IN BALAuth class");
             return (dataAuthObj.SignUp(userObj));
         }
 

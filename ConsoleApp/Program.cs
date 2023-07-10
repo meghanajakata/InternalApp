@@ -1,15 +1,12 @@
-﻿// See https://aka.ms/new-console-template for more information
-using BusinessModels;
+﻿using BusinessModels;
 
 namespace ConsoleApp
 {
 
     public class Program
     {
-
         public static void Main()
         {
-
             string message;
             string option;
             int value ;
@@ -20,8 +17,8 @@ namespace ConsoleApp
                 Log.Write(Literals.choice);
                 option = Console.ReadLine();
 
-                try
-                {
+                //try
+                //{
                     value = Convert.ToInt32(option);
                     switch (value)
                     {
@@ -39,12 +36,12 @@ namespace ConsoleApp
                             Log.Write(Literals.invalidOption);
                             break;
                     }
-                }
+                //}
 
-                catch (Exception ex)
-                {
-                    Log.Write(Literals.invalidCast);
-                }
+                //catch (Exception ex)
+                //{
+                //    Log.Write(Literals.invalidCast);
+                //}
             }
         }
     }

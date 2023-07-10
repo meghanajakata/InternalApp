@@ -1,11 +1,7 @@
-﻿using AutoMapper;
-using BusinessModels;
-using DataModels;
-using System;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
+﻿//using AutoMapper;
 using BModels = BusinessModels;
 using DModels = DataModels;
+using BusinessModels;
 
 namespace DataLayer
 {
@@ -22,11 +18,20 @@ namespace DataLayer
         public string SignUp(BModels.User userObj)
         {
             if (UserExists(userObj) == false)
-            { 
-                var mapper = MapperConfig.InitializeAutomapper();
-                //DModels.User dModeluser = (DModels.User)MapperConfig.MapModel(mapper,userObj);
-                DModels.User dModeluser = new DModels.User();
-                PropertyCopier.ConvertModel2(mapper, dModeluser);
+            {
+
+                Console.WriteLine("In DALAUTH class");
+
+                //var mapper = MapperConfig.InitializeAutomapper();
+                //DModels.User dModeluser = (DModels.User)MapperConfig.MapModel(mapper, userObj);
+
+                //DModels.User dModeluser = new DModels.User();
+                //PropertyCopier<BModels.User, DModels.User>.ConvertModel2(userObj, dModeluser);
+
+                DModels.User? dModeluser = ConvertModel(userObj);
+
+                Console.WriteLine(dModeluser.Username + "\t" + dModeluser.EmailId + "\t" + dModeluser.MobileNumber + "\t" + dModeluser.Password);
+
                 AddUser(dModeluser);
                 return BModels.Literals.signUpSuccess;
             }
@@ -40,6 +45,7 @@ namespace DataLayer
         /// <returns></returns>
         public string Login(BModels.User user)
         {
+            GetUsers();
             DModels.User userObj = GetUser(user);
             if (DataSources.userDetails.Count == 0)
             {
@@ -128,10 +134,22 @@ namespace DataLayer
             }
         }
 
+        public void GetUsers()
+        {
+            foreach (var item in DataSources.userDetails)
+            {
+                Console.WriteLine(item.Username + " " + item.Password);
+            }
+            Console.WriteLine("exiting getusers");
+        }
+
         //public dynamic? ConvertModel(dynamic getModel)
         //{
         //    dynamic setModel;
-        //    if (getModel.GetType().Name == typeof(DModels.User))
+        //    string modelType = Convert.ToString(getModel.GetType().Name);
+
+        //    //if (getModel.GetType().Name == typeof(DModels.User))
+        //    if(modelType == Convert.ToString(typeof(DModels.User)))
         //    {
         //        setModel = new BModels.User();
 
@@ -152,12 +170,12 @@ namespace DataLayer
 
         //}
 
-        
-        public dynamic CovertModel(IUser getModel)
+
+        public dynamic ConvertModel(IUser getModel)
         {
             dynamic setModel;
 
-            if(getModel is BModels.User)
+            if (getModel is BModels.User)
             {
                 setModel = (DModels.User)getModel;
             }
@@ -167,51 +185,49 @@ namespace DataLayer
                 setModel = (BModels.User)getModel;
 
             }
-            
+
             return setModel;
         }
 
-        //public dynamic ConvertModel1<T>(T setModel)
-        //{
-
-        //}
-
-
-
     }
 
-    public class MapperConfig
-    {
-        public static Mapper InitializeAutomapper()
-        {
-            //Provide all the Mapping Configuration
-            var config = new MapperConfiguration(cfg =>
-            {
-                //Configuring Employee and EmployeeDTO
-                cfg.CreateMap<BModels.User,DModels.User>();
-                //Any Other Mapping Configuration ....
-            });
-            //Create an Instance of Mapper and return that Instance
-            var mapper = new Mapper(config);
-            return mapper;
-        }
+    //public class MapperConfig
+    //{
+    //    public static Mapper InitializeAutomapper()
+    //    {
+    //        //Provide all the Mapping Configuration
+    //        var config = new MapperConfiguration(cfg =>
+    //        {
+    //            //Configuring Employee and EmployeeDTO
+    //            cfg.CreateMap<BModels.User,DModels.User>();
+    //            //Any Other Mapping Configuration ....
+    //        });
+    //        //Create an Instance of Mapper and return that Instance
+    //        var mapper = new Mapper(config);
+    //        return mapper;
+    //    }
 
-        public static Object MapModel(dynamic mapper,Object getObj)
-        {
-            Object setObj;
-            if (getObj.GetType() == typeof(BModels.User))
-            {
-                setObj = mapper.Map<DModels.User>(getObj);
+    //    public static Object MapModel(dynamic mapper,Object getObj)
+    //    {
+    //        Object setObj;
+    //        if (getObj.GetType() == typeof(BModels.User))
+    //        {
+    //            setObj = mapper.Map<DModels.User>(getObj);
 
-            }
-            else
-            {
-                setObj = mapper.Mapper<BModels.User>(getObj);
-            }
-            return setObj;
-        }
-    }
+    //        }
+    //        else
+    //        {
+    //            setObj = mapper.Mapper<BModels.User>(getObj);
+    //        }
+    //        return setObj;
+    //    }
+    //}
 
+    /// <summary>
+    /// Represents Property copying using Reflection
+    /// </summary>
+    /// <typeparam name="Tobj1"></typeparam>
+    /// <typeparam name="Tobj2"></typeparam>
     public class PropertyCopier<Tobj1, Tobj2> where Tobj1 : class where Tobj2 : class
     {
         public static void ConvertModel2(Tobj1 getModel, Tobj2 setModel)
@@ -223,7 +239,7 @@ namespace DataLayer
             {
                 foreach (var setModelProperty in setModelProperties)
                 {
-                    if (getModelProperty.Name == setModelProperty.Name && getModelProperty == setModelProperty.PropertyType)
+                    if (getModelProperty.Name == setModelProperty.Name && getModelProperty.PropertyType == setModelProperty.PropertyType)
                     {
                         setModelProperty.SetValue(setModel, getModelProperty.GetValue(getModel));
                         break;
